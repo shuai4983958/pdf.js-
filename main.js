@@ -3,8 +3,6 @@ var pdfPath = 'asset/compressed.tracemonkey-pldi-09.pdf';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   '/build/webpack/pdf.worker.bundle.js';
-
-console.log(document.getElementById('the-canvas'))
 var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
@@ -12,6 +10,7 @@ var pdfDoc = null,
     scale = 0.8,
     canvas = document.getElementById('the-canvas'),
     ctx = canvas.getContext('2d');
+    pafMaxPages = 0;
 
 function renderPage(num) {
   pageRendering = true;
@@ -58,6 +57,21 @@ function onPrevPage() {
 document.getElementById('prev').addEventListener('click', onPrevPage);
 
 
+
+function jumpTOpages(){
+  var page = document.getElementById('txt').value;
+  if(page != ''){
+    pageNum = parseInt(page);
+    if(pageNum >pafMaxPages){
+      return true
+    }
+    queueRenderPage(pageNum);
+    document.getElementById('page_num').textContent = pageNum;
+    }
+}
+document.getElementById('jump').addEventListener('click', jumpTOpages);
+  
+
 function onNextPage() {
   if (pageNum >= pdfDoc.numPages) {
     return;
@@ -68,10 +82,11 @@ function onNextPage() {
 document.getElementById('next').addEventListener('click', onNextPage);
 
 
+
 pdfjsLib.getDocument(pdfPath).then(function(pdfDoc_) {
   pdfDoc = pdfDoc_;
   document.getElementById('page_count').textContent = pdfDoc.numPages;
-
+  pafMaxPages = pdfDoc.numPages;
  
   renderPage(pageNum);
 });
